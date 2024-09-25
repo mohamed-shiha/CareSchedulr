@@ -1,0 +1,47 @@
+﻿@page "/appointmentbooking"
+@inject HttpClient HttpClient
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.ComponentModel.DataAnnotations
+@attribute [Authorize]
+
+<h3>Book an Appointment</h3>
+
+<EditForm Model="@appointment" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField @bind-Value="appointment.PatientName" Label="Patient Name" For="@(() => appointment.PatientName)" />
+                    <MudTextField @bind-Value="appointment.PPSNumber" Label="PPS Number" For="@(() => appointment.PPSNumber)" />
+                    <MudDatePicker @bind-Date="appointment.AppointmentDate" Label="Appointment Date" For="@(() => appointment.AppointmentDate)" />
+                    <MudTimePicker @bind-Time="appointment.AppointmentTime" Label="Appointment Time" For="@(() => appointment.AppointmentTime)" />
+                    <MudTextField @bind-Value="appointment.Description" Label="Description" Lines="3" For="@(() => appointment.Description)" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Book Appointment</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    private Appointment appointment = new Appointment();
+
+    private async Task HandleValidSubmit(EditContext context)
+    {
+        try
+        {
+            var response = await HttpClient.PostAsJsonAsync("api/appointments", appointment);
+            response.EnsureSuccessStatusCode();
+            Navigation.NavigateTo("appointments");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+}

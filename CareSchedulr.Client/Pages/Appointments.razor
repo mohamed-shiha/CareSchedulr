@@ -1,8 +1,25 @@
 ﻿@page "/appointments"
+@inject AppointmentService AppointmentService
 
 <MudText Typo="Typo.h3" GutterBottom="true">Appointments</MudText>
 <MudText Class="mb-8">Manage your appointments here.</MudText>
 
-<MudPaper Class="pa-4">
-    <MudText>Appointment list will be displayed here.</MudText>
-</MudPaper>
+<MudTabs>
+    <MudTabPanel Text="Book Appointment">
+        <AppointmentBooking />
+    </MudTabPanel>
+    <MudTabPanel Text="View Appointments">
+        <MudTable Items="@(AppointmentService.GetAppointments())" Hover="true" Striped="true">
+            <HeaderContent>
+                <MudTh>Patient Name</MudTh>
+                <MudTh>Date & Time</MudTh>
+                <MudTh>Description</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Patient Name">@context.PatientName</MudTd>
+                <MudTd DataLabel="Date & Time">@context.AppointmentDate.Value.ToString("g")</MudTd>
+                <MudTd DataLabel="Description">@context.Description</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudTabPanel>
+</MudTabs>

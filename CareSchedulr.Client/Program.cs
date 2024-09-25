@@ -1,4 +1,5 @@
 using CareSchedulr.Client;
+using CareSchedulr.Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
@@ -11,5 +12,6 @@ builder.Services.AddMudServices();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
+builder.Services.AddSingleton<AppointmentService>();
 
 await builder.Build().RunAsync();
