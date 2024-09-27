@@ -1,25 +1,56 @@
 ﻿@page "/appointments"
-@inject AppointmentService AppointmentService
+@inject HttpClient Http
+@inject ISnackbar Snackbar
 
 <MudText Typo="Typo.h3" GutterBottom="true">Appointments</MudText>
-<MudText Class="mb-8">Manage your appointments here.</MudText>
 
 <MudTabs>
     <MudTabPanel Text="Book Appointment">
         <AppointmentBooking />
     </MudTabPanel>
-    <MudTabPanel Text="View Appointments">
-        <MudTable Items="@(AppointmentService.GetAppointments())" Hover="true" Striped="true">
+    <MudTabPanel Text="View Appointments" OnClick="LoadAppointments">
+        <MudTable Items="@appointments" Hover="true" Striped="true" Loading="@loading" LoadingProgressColor="Color.Info">
             <HeaderContent>
+                <MudTh>PPS Number</MudTh>
                 <MudTh>Patient Name</MudTh>
-                <MudTh>Date & Time</MudTh>
+                <MudTh>Date</MudTh>
+                <MudTh>Time</MudTh>
                 <MudTh>Description</MudTh>
             </HeaderContent>
             <RowTemplate>
+                <MudTd DataLabel="PPS Number">@context.PPSNumber</MudTd>
                 <MudTd DataLabel="Patient Name">@context.PatientName</MudTd>
-                <MudTd DataLabel="Date & Time">@context.AppointmentDate.Value.ToString("g")</MudTd>
+                <MudTd DataLabel="Date">@context.AppointmentDate?.ToShortDateString()</MudTd>
+                <MudTd DataLabel="Time">@context.AppointmentTime?.ToString(@"hh\:mm")</MudTd>
                 <MudTd DataLabel="Description">@context.Description</MudTd>
             </RowTemplate>
         </MudTable>
     </MudTabPanel>
 </MudTabs>
+
+
+@code {
+    private List<Appointment> appointments = new List<Appointment>();
+    private bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAppointments();
+    }
+
+    private async Task LoadAppointments()
+    {
+        try
+        {
+            appointments = await Http.GetFromJsonAsync<List<Appointment>>("api/appointments") ?? new List<Appointment>();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error loading appointments: " + ex.Message, Severity.Error);
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+}

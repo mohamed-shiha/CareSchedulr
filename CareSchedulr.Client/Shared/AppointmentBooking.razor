@@ -1,6 +1,7 @@
 ﻿@page "/appointmentbooking"
 @inject HttpClient HttpClient
 @inject NavigationManager Navigation
+@inject ISnackbar Snackbar
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using System.ComponentModel.DataAnnotations
@@ -8,40 +9,69 @@
 
 <h3>Book an Appointment</h3>
 
-<EditForm Model="@appointment" OnValidSubmit="@HandleValidSubmit">
+<EditForm @ref=form Model="@appointment" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
-    <MudGrid>
+    <MudGrid >
         <MudItem xs="12" sm="7">
             <MudCard>
                 <MudCardContent>
-                    <MudTextField @bind-Value="appointment.PatientName" Label="Patient Name" For="@(() => appointment.PatientName)" />
-                    <MudTextField @bind-Value="appointment.PPSNumber" Label="PPS Number" For="@(() => appointment.PPSNumber)" />
-                    <MudDatePicker @bind-Date="appointment.AppointmentDate" Label="Appointment Date" For="@(() => appointment.AppointmentDate)" />
-                    <MudTimePicker @bind-Time="appointment.AppointmentTime" Label="Appointment Time" For="@(() => appointment.AppointmentTime)" />
-                    <MudTextField @bind-Value="appointment.Description" Label="Description" Lines="3" For="@(() => appointment.Description)" />
+                    <MudTextField Disabled="loading" @bind-Value="appointment.PatientName" Label="Patient Name" For="@(() => appointment.PatientName)" />
+                    <MudTextField Disabled="loading"  @bind-Value="appointment.PPSNumber" Label="PPS Number" For="@(() => appointment.PPSNumber)" />
+                    <MudDatePicker Disabled="loading" @bind-Date="appointment.AppointmentDate" Label="Appointment Date" For="@(() => appointment.AppointmentDate)" />
+                    <MudTimePicker Disabled="loading" @bind-Time="appointment.AppointmentTime" Label="Appointment Time" For="@(() => appointment.AppointmentTime)" />
+                    <MudTextField Disabled="loading" @bind-Value="appointment.Description" Label="Description" Lines="3" For="@(() => appointment.Description)" />
                 </MudCardContent>
                 <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Book Appointment</MudButton>
+                    <MudButton Disabled="loading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Book Appointment</MudButton>
                 </MudCardActions>
             </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="5">
+            <MudPaper Class="pa-4 mud-height-full">
+                <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
+                <ValidationSummary />
+            </MudPaper>
         </MudItem>
     </MudGrid>
 </EditForm>
 
 @code {
     private Appointment appointment = new Appointment();
+    private EditForm form;
+    private bool loading = false;
 
-    private async Task HandleValidSubmit(EditContext context)
+    private async Task HandleValidSubmit()
     {
+        loading = true;
         try
         {
             var response = await HttpClient.PostAsJsonAsync("api/appointments", appointment);
-            response.EnsureSuccessStatusCode();
-            Navigation.NavigateTo("appointments");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Appointment booked successfully!", Severity.Success);
+                ResetForm();
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Failed to book appointment: {errorMessage}", Severity.Error);
+            }
         }
         catch (AccessTokenNotAvailableException exception)
         {
             exception.Redirect();
         }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error);
+        }
+        loading = false;
+    }
+
+    private void ResetForm()
+    {
+        appointment = new Appointment();
+        form.EditContext.MarkAsUnmodified();
+        StateHasChanged();
     }
 }
