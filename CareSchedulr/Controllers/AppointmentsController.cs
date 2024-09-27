@@ -36,5 +36,11 @@ namespace CareSchedulr.Controllers
 
             return appointment;
         }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointments()
+        {
+            return await _context.Appointments.ToListAsync();
+        }
     }
 }
