@@ -42,5 +42,37 @@ namespace CareSchedulr.Controllers
         {
             return await _context.Appointments.ToListAsync();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> CancelAppointment(int id)
+        {
+            var appointment = await _context.Appointments.FindAsync(id);
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+
+            _context.Appointments.Remove(appointment);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPut("{id}/reschedule")]
+        public async Task<IActionResult> RescheduleAppointment(int id, [FromBody] AppointmentRescheduleDto rescheduleDto)
+        {
+            var appointment = await _context.Appointments.FindAsync(id);
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+
+            appointment.AppointmentDate = rescheduleDto.NewDate;
+            appointment.AppointmentTime = rescheduleDto.NewTime;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(appointment);
+        }
     }
 }

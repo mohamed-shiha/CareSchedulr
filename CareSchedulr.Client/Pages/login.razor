@@ -1,0 +1,26 @@
+﻿@page "/login"
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+
+<MudCard>
+    <MudCardContent>
+        <MudTextField @bind-Value="model.Username" Label="Username" />
+        <MudTextField @bind-Value="model.Password" Label="Password" InputType="InputType.Password" />
+        <MudCheckBox @bind-Checked="model.RememberMe" Label="Remember Me" />
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton OnClick="LoginAsync" Color="Color.Primary">Login</MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    private LoginModel model = new LoginModel();
+
+    private async Task LoginAsync()
+    {
+        if (await AuthService.LoginAsync(model))
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}

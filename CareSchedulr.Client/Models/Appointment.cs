@@ -16,4 +16,13 @@ namespace CareSchedulr.Client.Models
         [Required]
         public string Description { get; set; }
     }
+
+    public class AppointmentRescheduleDto
+    {
+        [Required]
+        public DateTime NewDate { get; set; }
+        [Required]
+        public TimeSpan NewTime { get; set; }
+    }
+
 }
