@@ -6,7 +6,7 @@
     <MudCardContent>
         <MudTextField @bind-Value="model.Username" Label="Username" />
         <MudTextField @bind-Value="model.Password" Label="Password" InputType="InputType.Password" />
-        <MudCheckBox @bind-Checked="model.RememberMe" Label="Remember Me" />
+        <MudCheckBox T="bool" @bind-Checked="model.RememberMe" Label="Remember Me" />
     </MudCardContent>
     <MudCardActions>
         <MudButton OnClick="LoginAsync" Color="Color.Primary">Login</MudButton>
