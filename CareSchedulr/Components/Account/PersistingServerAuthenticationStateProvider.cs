@@ -50,6 +50,9 @@ internal sealed class PersistingServerAuthenticationStateProvider : ServerAuthen
         {
             var userId = principal.FindFirst(options.ClaimsIdentity.UserIdClaimType)?.Value;
             var email = principal.FindFirst(options.ClaimsIdentity.EmailClaimType)?.Value;
+            var firstName = principal.FindFirst(options.ClaimsIdentity.UserNameClaimType)?.Value;
+            var lastName = principal.FindFirst(options.ClaimsIdentity.UserNameClaimType)?.Value;
+            var role = principal.FindFirst(options.ClaimsIdentity.RoleClaimType)?.Value;
 
             if (userId != null && email != null)
             {
@@ -57,6 +60,9 @@ internal sealed class PersistingServerAuthenticationStateProvider : ServerAuthen
                 {
                     UserId = userId,
                     Email = email,
+                    FirstName = firstName?.Split(" ")[0] ?? "",
+                    LastName = lastName?.Split(" ")[1] ?? "",
+                    Role = role ?? ""
                 });
             }
         }

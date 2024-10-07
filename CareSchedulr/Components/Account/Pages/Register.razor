@@ -29,9 +29,27 @@
 
             <MudGrid>
                 <MudItem md="12">
+                    <MudStaticTextField For="@(() => Input.FirstName)" @bind-Value="Input.FirstName"
+                                        Label="First Name" Placeholder="John"
+                                        UserAttributes="@(new() { { "autocomplete", "true" }, { "aria-required", "true" } } )" />
+                </MudItem>
+
+                <MudItem md="12">
+                    <MudStaticTextField For="@(() => Input.LastName)" @bind-Value="Input.LastName"
+                                        Label="Last Name" Placeholder="John"
+                                        UserAttributes="@(new() { { "autocomplete", "true" }, { "aria-required", "true" } } )" />
+                </MudItem>
+
+                <MudItem md="12">
                     <MudStaticTextField For="@(() => Input.Email)" @bind-Value="Input.Email"
                                         Label="Email" Placeholder="name@example.com"
                                         UserAttributes="@(new() { { "autocomplete", "true" }, { "aria-required", "true" } } )" />
+                </MudItem>
+                <MudItem md="12">
+                    <MudSelect @bind-Value="Input.Role" For="@(() => Input.Role)" Placeholder="Select Role">
+                        <MudSelectItem Value="@("Patient")">Patient</MudSelectItem>
+                        <MudSelectItem Value="@("Doctor")">Doctor</MudSelectItem>
+                    </MudSelect>
                 </MudItem>
                 <MudItem md="12">
                     <MudStaticTextField For="@(() => Input.Password)" @bind-Value="Input.Password"
@@ -43,6 +61,11 @@
                                         Label="Confirm Password" InputType="InputType.Password" Placeholder="confirm password"
                                         UserAttributes="@(new() { { "autocomplete", "new-password" }, { "aria-required", "true" } } )" />
                 </MudItem>
+                
+                <MudItem md="12">
+                    <MudDatePicker @bind-Date="Input.DOB" Label="Date Of Birth" For="@(() => Input.DOB)" />
+                </MudItem>
+                
                 <MudItem md="12">
                     <MudStaticButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" FormAction="FormAction.Submit">Register</MudStaticButton>
                 </MudItem>
@@ -127,10 +150,29 @@
 
     private sealed class InputModel
     {
+
+
+        [Required]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; } = "";
+
+        [Required]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; } = "";
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; } = "";
+
+        [Required]
+        [Display(Name = "Role")]
+        public string Role { get; set; } = "";
+
+        [Required]
+        [DataType(DataType.Date)]
+        [Display(Name = "Date Of Birth")]
+        public DateTime? DOB { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
